@@ -2,16 +2,31 @@ import {
   ADS_MAX,
   INITIAL_MAP_VIEW,
   INITIAL_MAP_ZOOM,
+  LOCATION_DECIMAL,
+  MAIN_MARKER_ICON,
   MARKER_ICON } from './const.js';
 import { enableForm } from './utils.js';
 import { getAdPopup } from './ad-popup.js';
 import { getData } from './api.js';
 import { isValid } from './filter.js';
+import { enableAdForm } from './ad-form.js';
 
 const adForm = document.querySelector('.ad-form');
 const filterForm = document.querySelector('.map__filters');
 
 const markerGroup = L.layerGroup();
+
+const mainMarker = L.marker(
+  INITIAL_MAP_VIEW,
+  {
+    icon: MAIN_MARKER_ICON,
+    draggable: true,
+  },
+);
+
+mainMarker.on('moveend', () => {
+  adForm.querySelector('#address').value = `${mainMarker.getLatLng().lat.toFixed(LOCATION_DECIMAL)}, ${mainMarker.getLatLng().lng.toFixed(LOCATION_DECIMAL)}`;
+});
 
 const renderMarkers = (data) => {
   const filteredAds = data
@@ -25,7 +40,7 @@ const renderMarkers = (data) => {
         lng: ad.location.lng,
       },
       {
-        MARKER_ICON,
+        icon: MARKER_ICON,
       },
     );
 
@@ -47,7 +62,7 @@ const enableFilters = (ads) => {
 const loadMap = () => {
   const map = L.map('map-canvas')
     .on('load', () => {
-      enableForm(adForm, () => {});
+      enableForm(adForm, () => enableAdForm(mainMarker));
       getData(
         (ads) => {
           renderMarkers(ads);
@@ -65,6 +80,7 @@ const loadMap = () => {
     },
   ).addTo(map);
 
+  mainMarker.addTo(map);
   markerGroup.addTo(map);
 };
 
