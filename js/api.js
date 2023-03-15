@@ -3,11 +3,10 @@ import { GET_DATA_URL, POST_DATA_URL } from './const.js';
 const getData = (onSuccess, onFail) => {
   fetch(
     GET_DATA_URL,
-  ).then((response) => {
-    response.ok ? onSuccess() : onFail();
-  }).catch(() => {
-    onFail();
-  });
+  )
+    .then((response) => response.json())
+    .then((ads) => onSuccess(ads))
+    .catch(() => onFail());
 };
 
 const sendData = (body, onSuccess, onFail) => {
