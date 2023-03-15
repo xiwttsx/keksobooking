@@ -1,8 +1,10 @@
+import { sendData } from './api.js';
 import {
   LOCATION_DECIMAL,
   PRICE_MAX,
   TITLE_LENGTH_MAX,
   TITLE_LENGTH_MIN } from './const.js';
+import { showMessage } from './utils.js';
 
 const adForm = document.querySelector('.ad-form');
 const titleInput = adForm.querySelector('#title');
@@ -13,6 +15,9 @@ const roomNumberInput = adForm.querySelector('#room_number');
 const capacityInput = adForm.querySelector('#capacity');
 const timeInInput = adForm.querySelector('#timein');
 const timeOutInput = adForm.querySelector('#timeout');
+
+const successMessageTemplate = document.querySelector('#success').content.querySelector('div');
+const errorMessageTemplate = document.querySelector('#error').content.querySelector('div');
 
 const typeToMinPrice = {
   'bungalow': 0,
@@ -89,6 +94,22 @@ const enableAdForm = (marker) => {
 
   timeOutInput.addEventListener('input', (evt) => {
     timeInInput.value = evt.target.value;
+  });
+
+  adForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    sendData(
+      new FormData(evt.target),
+      () => {
+        showMessage(successMessageTemplate);
+        adForm.reset();
+        document.querySelector('.map__filters').reset();
+      },
+      () => {
+        showMessage(errorMessageTemplate);
+      },
+    );
   });
 };
 

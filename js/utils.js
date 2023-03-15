@@ -16,4 +16,16 @@ const enableForm = (form, cb) => {
   cb();
 };
 
-export { disableForm, enableForm };
+const showMessage = (template) => {
+  const message = template.cloneNode(true);
+
+  document.querySelector('body').appendChild(message);
+
+  document.addEventListener('click', () => {message.remove();}, { once: true });
+};
+
+export {
+  disableForm,
+  enableForm,
+  showMessage
+};
